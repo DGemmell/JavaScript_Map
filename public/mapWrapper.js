@@ -28,18 +28,17 @@
   };
 
   MapWrapper.prototype.addInfoWindow = function(){
-    google.maps.event.addListener(this.googleMap, 'click', function(event){
-      const window = new google.maps.Marker({
-        
-      })
-      this.addInfoWindow(coords);
-    }.bind(this));
+    marker.addListener('click', function(){
+      infowindow.open(map, marker);
+    });
+  }
 
-  };
 
 
   MapWrapper.prototype.bounceMarkers = function (){
     this.markers.forEach(function(marker){
       marker.setAnimation(google.maps.Animation.BOUNCE);
     })
-  };
+  }
+
+  
