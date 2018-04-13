@@ -13,32 +13,47 @@
       map: this.googleMap
     })
     this.markers.push(marker);
-
+    return marker;
   }
 
-  MapWrapper.prototype.addClickEvent = function(){
+  MapWrapper.prototype.addClickEvent = function(weatherInformation) {
     google.maps.event.addListener(this.googleMap, 'click', function(event){
       const coords = {
         lat: event.latLng.lat(),
         lng: event.latLng.lng()
       };
-      this.addMarker(coords);
-    }.bind(this));
+      var marker = this.addMarker(coords);
 
+      marker.addListener('click', function () {
+        var infoWindow = new google.maps.InfoWindow({
+          content: weatherInformation
+        });
+        infoWindow.open(this.map, marker);
+      });
+    }.bind(this));
   };
 
-  MapWrapper.prototype.addInfoWindow = function(){
-    marker.addListener('click', function(){
-      infowindow.open(map, marker);
-    });
+  MapWrapper.prototype.addInfoWindow = function (coords, text) {
+      var url = 'http://api.openweathermap.org/data/2.5/forecast?id=524901&APPID=3351093e25c30f219696047357c3f23f';
+      var request = new XMLHttpRequest();
+      request.open('GET', url);
+      var marker = this.addMarker(coords);
+      marker.addListener('click', function () {
+        var infoWindow = new google.maps.InfoWindow({
+          content: text
+        });
+        infoWindow.open(this.map, marker);
+      })
+      debugger;
   }
 
 
 
-  MapWrapper.prototype.bounceMarkers = function (){
-    this.markers.forEach(function(marker){
-      marker.setAnimation(google.maps.Animation.BOUNCE);
-    })
-  }
 
-  
+  MapWrapper.prototype.geoLocate = function () {
+    navigator.geolocation.getCurrentPosition(function (position) {
+      var center = { lat: position.coords.latitude, lng: position.coords.longitude };
+      this.googleMap.setCenter(center);
+      this.addMarker(center);
+    }.bind(this));
+  }
